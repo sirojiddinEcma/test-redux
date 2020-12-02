@@ -1,0 +1,8 @@
+package uz.pdp.appwarehouseg8.entity.enums;
+
+public enum SystemRoleEnum {
+    ROLE_SUPER_ADMIN,//SISTEMA EGASI
+    ROLE_ADMIN,//SISTEMA EGASI YORDAMCHISI
+    ROLE_MODERATOR,//SISITEMA XODIMI
+    ROLE_USER//SISTEMA FOYDALANUVCHILARI
+}

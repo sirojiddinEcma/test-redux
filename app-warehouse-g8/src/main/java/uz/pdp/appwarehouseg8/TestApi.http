@@ -1,0 +1,34 @@
+GET http://localhost/api/country
+Content-Type: application/json
+Accept-Language: en
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyYmQyNDY3OC1mN2I0LTQxM2QtOTdhYy1lYzYxODYzOGFjMzIiLCJpYXQiOjE2MDY4OTE4NTgsImV4cCI6MTYwNzQ5NjY1OH0.skeuQ0lUW-ybo9SRPJA-QEV1JZRrnVmcH_hfWtUPqebtS_OA6ccYNZ9XraVowrGNknRHtZJazV-AXBEAqlF7FQ
+
+{
+  "firstName": "Sirojiddin",
+  "lastName": "Saidov",
+  "phoneNumber": "+998996791136",
+  "password": "root123",
+  "prePassword": "root1234",
+  "companyName":"ECMA"
+}
+
+###
+
+
+GET http://localhost/api/category
+Content-Type: application/json
+Accept-Language: en
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyYmQyNDY3OC1mN2I0LTQxM2QtOTdhYy1lYzYxODYzOGFjMzIiLCJpYXQiOjE2MDY3MjQ1MjgsImV4cCI6MTYwNzMyOTMyOH0.4EctrDgKIa06JIHFMjSy5EqVuxNB-BYzLHniP8nLO5D_xpUlq6kEwnZDG_h5tY7Fu12CHyfW9DbaUubB8YCglQ
+
+{
+  "nameUz": "Elektronik",
+  "nameRu": "Elektronik",
+  "nameEn": "Elektronik",
+  "company":"/e4a5437b-234f-496f-a8d8-7b36bb231052"
+}
+
+###
+
+
+
+
