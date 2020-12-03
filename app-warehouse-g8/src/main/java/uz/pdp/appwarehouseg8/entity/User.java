@@ -1,5 +1,6 @@
 package uz.pdp.appwarehouseg8.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -35,12 +36,20 @@ public class User extends AbsEntity implements UserDetails {
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
+    @Column(unique = true)
+    private String email;
+
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Attachment photo;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Company> companies;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private CompanyRole companyRole;
 
@@ -50,10 +59,12 @@ public class User extends AbsEntity implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "system_role_id"))
     private List<SystemRole> systemRoles;
 
-    private boolean enabled = true;
+    private boolean enabled = false;
     private boolean credentialsNonExpired = true;
     private boolean accountNonLocked = true;
     private boolean accountNonExpired = true;
+
+    private String code;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

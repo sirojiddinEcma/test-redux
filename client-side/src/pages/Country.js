@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import {Modal, ModalBody, ModalFooter, ModalHeader} from "reactstrap";
 import {AvField, AvForm} from "availity-reactstrap-validation";
 import {TOKEN} from "../utils/constants";
-import axios from 'axios'
 import api from '../utils/api'
 import {toast} from "react-toastify";
+import request from "../utils/request";
 
 class Country extends Component {
     componentDidMount() {
@@ -16,10 +16,9 @@ class Country extends Component {
     }
 
     getCountries = () => {
-        axios.get(api.getCountriesUrl, {
-            headers: {
-                'Authorization': localStorage.getItem(TOKEN)
-            }
+        request({
+            url: api.getCountriesUrl,
+            method: 'GET',
         })
             .then(jovob => {
                 this.setState({countries: jovob.data._embedded.countries})
@@ -30,15 +29,10 @@ class Country extends Component {
 
     saveCountry = (e, v) => {
         let current = this.state.currentCountry;
-        axios({
+        request({
             url: api.addCountryUrl + (current ? ('/' + current.id) : ''),
             method: current ? 'PATCH' : 'POST',
-            data: v,
-            headers: {
-                'Authorization':
-                    localStorage.getItem(TOKEN),
-                'Access-Control-Allow-Origin': '*'
-            }
+            data: v
         }).then(res => {
             this.getCountries();
             this.closeModal();
@@ -68,16 +62,14 @@ class Country extends Component {
     }
 
     deleteCountry = () => {
-        axios.delete(api.deleteCountryUrl + '/' + this.state.currentCountry.id, {
-            headers: {
-                'Authorization': localStorage.getItem(TOKEN)
-            }
-        })
-            .then(jovob => {
-                this.hideDeleteModal();
-                this.getCountries();
-                toast.success("Dleetd")
-            }).catch(err => {
+        request({
+            url: api.deleteCountryUrl + '/' + this.state.currentCountry.id,
+            method: 'DELETE',
+        }).then(jovob => {
+            this.hideDeleteModal();
+            this.getCountries();
+            toast.success("Dleetd")
+        }).catch(err => {
             console.log(err.response.data)
         })
     }

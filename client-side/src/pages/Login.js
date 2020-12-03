@@ -1,16 +1,22 @@
 import React, {Component} from 'react';
 import {AvField, AvForm} from 'availity-reactstrap-validation'
-import axios from 'axios';
 import {TOKEN} from "../utils/constants";
+import request from "../utils/request";
+import api from "../utils/api";
 
 class Login extends Component {
+    componentDidMount() {
+        if (localStorage.getItem(TOKEN)) {
+            this.props.history.push('/cabinet')
+        }
+    }
 
     login = (e, v) => {
-        console.log(v);
-        axios.post(
-            'http://localhost/api/auth/login',
-            v
-        ).then(jovob => {
+        request({
+            url: api.loginUrl,
+            method: 'POST',
+            data: v
+        }).then(jovob => {
             localStorage.setItem(TOKEN, 'Bearer ' + jovob.data.object)
             this.props.history.push('/cabinet')
         }).catch(err => {

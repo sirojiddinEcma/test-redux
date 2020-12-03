@@ -7,6 +7,7 @@ import Cabinet from "./pages/Cabinet";
 import Home from "./pages/Home";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Register from "./pages/Register";
 
 class App extends Component {
     render() {
@@ -19,6 +20,7 @@ class App extends Component {
                         <Route exact path="/country" component={Country}/>
                         <Route exact path="/region" component={Region}/>
                         <Route exact path="/login" component={Login}/>
+                        <Route exact path="/register" component={Register}/>
                         <Route exact path="/cabinet" component={Cabinet}/>
                     </Switch>
                 </Router>

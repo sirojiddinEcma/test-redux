@@ -2,29 +2,26 @@ import React, {Component} from 'react';
 import {Modal, ModalBody, ModalHeader} from "reactstrap";
 import {AvField, AvForm} from 'availity-reactstrap-validation'
 import {TOKEN} from "../utils/constants";
-import axios from "axios";
 import api from "../utils/api";
 import {toast} from "react-toastify";
+import request from "../utils/request";
 
 class Region extends Component {
     getCountries = () => {
-        axios.get(api.getCountriesUrl, {
-            headers: {
-                'Authorization': localStorage.getItem(TOKEN)
-            }
-        })
-            .then(jovob => {
-                this.setState({countries: jovob.data._embedded.countries})
-            }).catch(err => {
+        request({
+            url: api.getCountriesUrl,
+            method: 'GET'
+        }).then(jovob => {
+            this.setState({countries: jovob.data._embedded.countries})
+        }).catch(err => {
             console.log(err.response.data)
         })
     }
 
     getRegions = () => {
-        axios.get(api.getRegionsUrl, {
-            headers: {
-                'Authorization': localStorage.getItem(TOKEN)
-            }
+        request({
+            url: api.getRegionsUrl,
+            method: 'GET',
         })
             .then(jovob => {
                 this.setState({regions: jovob.data._embedded.regions})
@@ -35,15 +32,10 @@ class Region extends Component {
 
     saveRegion = (e, v) => {
         let current = this.state.currentRegion;
-        axios({
-            url: api.addRegionUrl + (current ? ('/' + current.id) : ''),
+        request({
+            url: api.loginUrl,
             method: current ? 'PATCH' : 'POST',
-            data: v,
-            headers: {
-                'Authorization':
-                    localStorage.getItem(TOKEN),
-                'Access-Control-Allow-Origin': '*'
-            }
+            data: v
         }).then(res => {
             this.getRegions();
             this.closeModal();
@@ -54,13 +46,14 @@ class Region extends Component {
     }
 
     componentDidMount() {
-        if (!localStorage.getItem(TOKEN)){
+        if (!localStorage.getItem(TOKEN)) {
             this.props.history.push('/login')
-        }else {
+        } else {
             this.getCountries()
             this.getRegions()
         }
     }
+
     state = {
         regions: [],
         countries: [],
@@ -124,7 +117,7 @@ class Region extends Component {
                                 name="country">
                                 <option value="" disabled>Davlatni tanlang</option>
                                 {this.state.countries.map(bolta =>
-                                    <option value={"/"+bolta.id}>{bolta.nameEn}</option>
+                                    <option value={"/" + bolta.id}>{bolta.nameEn}</option>
                                 )}
                             </AvField>
                             <button className="btn btn-danger"

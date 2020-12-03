@@ -1,11 +1,21 @@
-import {BASE_URL} from "./constants";
-
 export default {
-    loginUrl: BASE_URL + 'auth/login',
-    getCountriesUrl: BASE_URL + 'country',
-    addCountryUrl: BASE_URL + 'country',
-    deleteCountryUrl: BASE_URL + 'country',
+    //AUTH
+    loginUrl: 'auth/login',
+    registerUrl: 'auth/register',
 
-    getRegionsUrl: BASE_URL + 'region',
-    addRegionUrl: BASE_URL + 'region',
+    //COUNTRY
+    getCountriesUrl: 'country',
+    addCountryUrl: 'country',
+    deleteCountryUrl: 'country',
+
+    //REGION
+    getRegionsUrl: 'region',
+    addRegionUrl: 'region',
+
+    //USER
+    userMe: 'user/me',
+    editProfile: 'user/edit',
+
+    //ATTACHMENT
+    uploadFile: 'attachment/uploadFile'
 }

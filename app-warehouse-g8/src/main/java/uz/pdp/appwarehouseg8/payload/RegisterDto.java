@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uz.pdp.appwarehouseg8.utils.ValidPassword;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -33,6 +34,9 @@ public class RegisterDto {
     private String companyName;
 
     private String address;
+
+    @Email
+    private String email;
 
     @NotBlank
     @Size(min = 6, max = 12)

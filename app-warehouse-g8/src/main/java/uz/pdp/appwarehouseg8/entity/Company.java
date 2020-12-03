@@ -1,5 +1,6 @@
 package uz.pdp.appwarehouseg8.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,15 +25,19 @@ public class Company extends AbsEntity {
     @Column(nullable = false)
     private String phoneNumber;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     private List<Warehouse> warehouses;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     private List<CompanyRole> companyRoles;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     private List<Category> categories;
 

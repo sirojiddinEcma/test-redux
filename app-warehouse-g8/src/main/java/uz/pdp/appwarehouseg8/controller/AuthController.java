@@ -3,10 +3,7 @@ package uz.pdp.appwarehouseg8.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uz.pdp.appwarehouseg8.payload.ApiResponse;
 import uz.pdp.appwarehouseg8.payload.LoginDto;
 import uz.pdp.appwarehouseg8.payload.RegisterDto;
@@ -41,4 +38,12 @@ public class AuthController {
         ApiResponse apiResponse = authService.login(loginDto);
         return ResponseEntity.status(apiResponse.isSuccess() ? 200 : 401).body(apiResponse);
     }
+
+    @GetMapping("verification")
+    public HttpEntity<?> verificationEmail(@RequestParam String email, @RequestParam String code) {
+        ApiResponse apiResponse = authService.verificationEmail(email, code);
+        return ResponseEntity.status(apiResponse.isSuccess() ? 200 : 409).body(apiResponse);
+    }
+
+
 }

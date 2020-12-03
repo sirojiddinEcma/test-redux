@@ -1,5 +1,6 @@
 package uz.pdp.appwarehouseg8.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,6 +30,13 @@ public class Attachment extends AbsEntity {
 
     private String contentType;//image/jpg
 
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "attachment", cascade = CascadeType.ALL)
     private AttachmentContent attachmentContent;
+
+    public Attachment(String name, long size, String contentType) {
+        this.name = name;
+        this.size = size;
+        this.contentType = contentType;
+    }
 }

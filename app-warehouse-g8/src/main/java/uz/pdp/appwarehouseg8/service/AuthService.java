@@ -1,6 +1,8 @@
 package uz.pdp.appwarehouseg8.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -43,6 +45,8 @@ public class AuthService implements UserDetailsService {
     CompanyPermissionRepository companyPermissionRepository;
     @Autowired
     JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     public ApiResponse register(RegisterDto registerDto) {
         if (userRepository.existsByPhoneNumber(registerDto.getPhoneNumber())) {
@@ -71,10 +75,13 @@ public class AuthService implements UserDetailsService {
                 passwordEncoder.encode(registerDto.getPassword()),
                 Collections.singletonList(company),
                 companyRole,
-                Collections.singletonList(systemRoleRepository.findByRoleSystemEnum(SystemRoleEnum.ROLE_USER))
-        );
+                Collections.singletonList(systemRoleRepository.findByRoleSystemEnum(SystemRoleEnum.ROLE_USER)));
         company.setUser(user);
+        user.setCode(UUID.randomUUID().toString());
+        user.setEmail(registerDto.getEmail());
         userRepository.save(user);
+        if (user.getEmail() != null)
+            sendToEmailAboutVerification(user);
         return new ApiResponse(
                 messageByLang.getMessageByKey("successfully.registered"),
                 true
@@ -111,5 +118,27 @@ public class AuthService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         return null;
+    }
+
+
+    public void sendToEmailAboutVerification(User user) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("noreply@baeldung.com");
+        message.setTo(user.getEmail());
+        message.setSubject("OKa tasdqilab yuboring");
+        message.setText("http://localhost/api/auth/verification?email=" + user.getEmail() + "&code=" + user.getCode());
+        javaMailSender.send(message);
+    }
+
+    public ApiResponse verificationEmail(String email, String code) {
+        Optional<User> optionalUser = userRepository.findByEmailAndCodeAndEnabledFalse(email, code);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setEnabled(true);
+            user.setCode(null);
+            userRepository.save(user);
+            return new ApiResponse("tasdiqlandi", true, jwtTokenProvider.generateToken(user.getId()));
+        }
+        return new ApiResponse("Xatolik", false);
     }
 }
