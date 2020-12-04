@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {AvField, AvForm} from "availity-reactstrap-validation";
 import request from "../utils/request";
 import api from "../utils/api";
-import {toast} from "react-toastify";
 
 class Register extends Component {
 
@@ -13,9 +12,10 @@ class Register extends Component {
             method: 'POST',
             data: v
         }).then(res => {
-            toast.success(res.data.message);
-            // localStorage.setItem(TOKEN, 'Bearer ' + res.data.object);
-            // this.props.history.push('/cabinet')
+            alert(res.data.message);
+            this.props.history.push('/')
+        }).catch(err => {
+            alert(err.response.data.message)
         })
     }
 

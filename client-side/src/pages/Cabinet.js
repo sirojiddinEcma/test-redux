@@ -114,7 +114,7 @@ class Cabinet extends Component {
 
                 <div style={{width: '100px'}}
                      className="m-2">
-                    {this.state.currentUser &&
+                    {this.state.currentUser && this.state.currentUser.photo &&
                     <img className="img-fluid" src={BASE_URL + 'attachment/' + this.state.currentUser.photo.id}
                          alt=""/>}
                 </div>

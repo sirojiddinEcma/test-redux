@@ -1,4 +1,4 @@
-GET http://localhost/api/country
+POST http://localhost/api/auth/login
 Content-Type: application/json
 Accept-Language: en
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyYmQyNDY3OC1mN2I0LTQxM2QtOTdhYy1lYzYxODYzOGFjMzIiLCJpYXQiOjE2MDY4OTE4NTgsImV4cCI6MTYwNzQ5NjY1OH0.skeuQ0lUW-ybo9SRPJA-QEV1JZRrnVmcH_hfWtUPqebtS_OA6ccYNZ9XraVowrGNknRHtZJazV-AXBEAqlF7FQ

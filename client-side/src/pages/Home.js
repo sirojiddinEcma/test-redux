@@ -4,7 +4,12 @@ import {LANGUAGE} from "../utils/constants";
 class Home extends Component {
 
     getLang(e) {
-        localStorage.setItem(LANGUAGE,e.target.value)
+        localStorage.setItem(LANGUAGE, e.target.value)
+    }
+
+    routeToNext = () => {
+        this.props.history.push('/verification/qalay/yomon/nimedi')
+        // this.props.history.goForward()
     }
 
     render() {
@@ -18,6 +23,7 @@ class Home extends Component {
                     <option value="ru">Russkiy</option>
                     <option value="en">English</option>
                 </select>
+                <button onClick={this.routeToNext}>Next</button>
             </div>
         );
     }

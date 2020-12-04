@@ -33,8 +33,20 @@ public class AuthController {
     }
 
 
+    /**
+     * parolni tekshiramiz, ammo token qaytarmaymiz
+     * @param loginDto
+     * @return
+     */
+    @PostMapping("checkPasswordAndLogin")
+    public HttpEntity<?> checkPasswordAndLogin(@Valid @RequestBody LoginDto loginDto) {
+        ApiResponse apiResponse = authService.checkPasswordAndLogin(loginDto);
+        return ResponseEntity.status(apiResponse.isSuccess() ? 200 : 401).body(apiResponse);
+    }
+
     @PostMapping("login")
     public HttpEntity<?> login(@Valid @RequestBody LoginDto loginDto) {
+
         ApiResponse apiResponse = authService.login(loginDto);
         return ResponseEntity.status(apiResponse.isSuccess() ? 200 : 401).body(apiResponse);
     }

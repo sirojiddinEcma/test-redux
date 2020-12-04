@@ -2,6 +2,8 @@ export default {
     //AUTH
     loginUrl: 'auth/login',
     registerUrl: 'auth/register',
+    verificationUrl: 'auth/verification',
+    checkPasswordAndLoginUrl: 'auth/checkPasswordAndLogin',
 
     //COUNTRY
     getCountriesUrl: 'country',

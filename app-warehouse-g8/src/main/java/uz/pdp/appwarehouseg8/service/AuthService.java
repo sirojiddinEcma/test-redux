@@ -1,8 +1,13 @@
 package uz.pdp.appwarehouseg8.service;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.UserRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -47,6 +52,8 @@ public class AuthService implements UserDetailsService {
     JwtTokenProvider jwtTokenProvider;
     @Autowired
     private JavaMailSender javaMailSender;
+    @Autowired
+    AuthenticationManager authenticationManager;
 
     public ApiResponse register(RegisterDto registerDto) {
         if (userRepository.existsByPhoneNumber(registerDto.getPhoneNumber())) {
@@ -81,33 +88,41 @@ public class AuthService implements UserDetailsService {
         user.setEmail(registerDto.getEmail());
         userRepository.save(user);
         if (user.getEmail() != null)
-            sendToEmailAboutVerification(user);
+            new Thread(() -> sendToEmailAboutVerification(user)).start();
         return new ApiResponse(
                 messageByLang.getMessageByKey("successfully.registered"),
-                true
-        );
+                true);
     }
 
     public ApiResponse login(LoginDto loginDto) {
-        Optional<User> optionalUser = userRepository.findByPhoneNumber(loginDto.getPhoneNumber());
-        if (!optionalUser.isPresent()) {
-            return new ApiResponse(
-                    messageByLang.getMessageByKey("unauthorized"),
-                    false);
-        } else {
-            User user = optionalUser.get();
-            if (passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-                String token = jwtTokenProvider.generateToken(user.getId());
-                return new ApiResponse(
-                        messageByLang.getMessageByKey("success.login"),
-                        true,
-                        token
-                );
-            } else {
+        if (getPhoneChecked(loginDto.getPhoneNumber())) {
+            Optional<User> optionalUser = userRepository.findByPhoneNumber(loginDto.getPhoneNumber());
+            if (!optionalUser.isPresent()) {
                 return new ApiResponse(
                         messageByLang.getMessageByKey("unauthorized"),
                         false);
+            } else {
+                User user = optionalUser.get();
+                if (passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+                    if (!user.isAccountNonExpired()
+                            || !user.isAccountNonLocked()
+                            || !user.isCredentialsNonExpired()
+                            || !user.isEnabled())
+                        return new ApiResponse("Iltimos emailingizni tekshiring", false);
+                    String token = jwtTokenProvider.generateToken(user.getId());
+                    return new ApiResponse(
+                            messageByLang.getMessageByKey("success.login"),
+                            true,
+                            token
+                    );
+                } else {
+                    return new ApiResponse(
+                            messageByLang.getMessageByKey("unauthorized"),
+                            false);
+                }
             }
+        } else {
+            return new ApiResponse("Oka aldamang postmandan", false);
         }
     }
 
@@ -116,8 +131,8 @@ public class AuthService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return null;
+    public UserDetails loadUserByUsername(String phoneNumber) throws UsernameNotFoundException {
+        return userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new UsernameNotFoundException(phoneNumber));
     }
 
 
@@ -126,7 +141,7 @@ public class AuthService implements UserDetailsService {
         message.setFrom("noreply@baeldung.com");
         message.setTo(user.getEmail());
         message.setSubject("OKa tasdqilab yuboring");
-        message.setText("http://localhost/api/auth/verification?email=" + user.getEmail() + "&code=" + user.getCode());
+        message.setText("http://localhost:3000/verification/" + user.getEmail() + "/" + user.getCode());
         javaMailSender.send(message);
     }
 
@@ -140,5 +155,36 @@ public class AuthService implements UserDetailsService {
             return new ApiResponse("tasdiqlandi", true, jwtTokenProvider.generateToken(user.getId()));
         }
         return new ApiResponse("Xatolik", false);
+    }
+
+    public ApiResponse checkPasswordAndLogin(LoginDto loginDto) {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginDto.getPhoneNumber(),
+                            loginDto.getPassword()
+                    ));
+            return new ApiResponse("Hammasi ok", true);
+        } catch (Exception e) {
+            return new ApiResponse("Xatolikk!!!", false);
+        }
+    }
+
+    public Boolean getPhoneChecked(String phoneNumber) {
+        try {
+            UserRecord userRecord = FirebaseAuth.getInstance().getUserByPhoneNumber(phoneNumber);
+            if (userRecord == null) {
+                return false;
+            } else {
+                if (userRepository.existsByPhoneNumber(userRecord.getPhoneNumber())) {
+                    FirebaseAuth.getInstance().deleteUser(userRecord.getUid());
+                    return true;
+                }
+            }
+        } catch (FirebaseAuthException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
     }
 }
